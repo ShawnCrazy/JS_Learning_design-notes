@@ -1,0 +1,4 @@
+//create a type(int) num between two numbers
+function createRandomNumber(min,max){
+  return Math.floor(Math.random()*(max-min)+min)
+}
