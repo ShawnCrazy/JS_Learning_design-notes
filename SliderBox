@@ -1,1 +1,118 @@
+/**
+ * Created by njche on 2017/8/12.
+ */
+function $(id) {return  document.getElementById(id);}
+/**takes off me more than 5 hours.
+ * 创建图片滑动窗口，
+ * 提供一个盒子并且有一个定位和内嵌宽高属性，
+ * 滑动窗口将会自动适应此大小*/
+function createImgSlider(sliderBox,w,h) {
+    /*存放要显示的图片,可动态添加，视图会自动适应*/
+    var SrcImages = ['images/11.jpg',
+        'images/22.jpg',
+        'images/33.jpg',
+        'images/44.jpg',
+        'images/55.jpg',
+        'images/66.jpg'];
+    var UrlOfImages = ['http://www.baidu.com/',
+        'http://www.w3school.com.cn/jsref/met_win_open.asp',
+        'https://www.jd.com/','#','#','#'];
+    var indexOfImg = 0;//图片下标
+    if(w==undefined){
+        /*只能获取内联样式的值，不能写成内部或外部样式*/
+        w = parseInt($(sliderBox).style.width);
+        h = parseInt($(sliderBox).style.height);
+    }
+    /*盒子宽高设置控件*/
+    var cutLeft = document.createElement('div');
+    var cutRight = document.createElement('div');
+    var bottomNav = document.createElement('div');
+    /*添加左右按钮切换效果*/
+    cutLeft.style = cutRight.style = 'position:absolute;text-align:center;' +
+        'width:'+(4*w/100)+
+        'px;height:'+(18*h/100)+
+        'px;margin-top:-'+(9*h/100)+
+        'px;top:50%;line-height:'+(18*h/100)+
+        'px;font-size:'+(3*w/100)+
+        'px;color:white;background-color:rgba(0,0,0,0.1);z-index:10;';
+    cutLeft.style.left = cutRight.style.right = '0';
+    cutLeft.innerHTML = '<';cutRight.innerHTML = '>';
+    /*绑定按钮事件*/
+    cutLeft.onmouseover = cutRight.onmouseover = function(){
+        this.style.backgroundColor = "rgba(0,0,0,0.7)";
+        this.style.cursor = 'pointer';
+    };
+    cutLeft.onmouseout = cutRight.onmouseout = function(){
+        this.style.backgroundColor = "rgba(0,0,0,0.1)";
+    };
+    cutLeft.onclick = cutRight.onclick = function(){
+        if(this.innerHTML == '&lt;'){
+            indexOfImg+=SrcImages.length-2;
+        }else{
+            indexOfImg++;
+        }
+        indexOfImg %= SrcImages.length;
+        refresh();
+    };
+    /*添加底部导航*/
+    bottomNav.style = 'position:absolute;left:50%;margin-left:-'+
+        (SrcImages.length*(w/40)/2)+
+        'px;bottom:'+(6*h/100)+
+        'px;height:'+(5*h/100)+
+        'px;line-height:'+(5*h/100)+
+        'px;border-radius:'+(3*h/100)+
+        'px;background-color:rgba(0,0,0,0.5);';
+    bottomNav.onmouseover = function(){
+        this.style.cursor = 'auto';
+    };
+    for(var i=0;i<SrcImages.length;i++) {
+        var smartLi = document.createElement('div');
+        smartLi.style = 'display:inline-block;width:' + (w/80) +
+            'px;height:' + (w/80) +
+            'px;border-radius:' + (w/80/2) +
+            'px;margin:0 '+(w/80/2)+
+            'px;background-color:white;';
+        (function(_i) {
+            smartLi.onmouseover = function () {
+                window.clearInterval(sliderTimer);
+                indexOfImg = _i;
+                refresh();
+            };
+            smartLi.onmouseout = function () {
+                this.style.backgroundColor = "white";
+                /*开启计时器，注意变量没有重新声明*/
+                indexOfImg--;
+                refresh();
+                sliderTimer = window.setInterval(refresh,3000);
+            };
+        })(i);
 
+        bottomNav.appendChild(smartLi)
+    }
+    /*更新视图*/
+    function refresh(){
+        indexOfImg %= SrcImages.length;
+        /*改变底部导航栏小圆点*/
+        for(var i=0;i<SrcImages.length;i++){
+            $(sliderBox).childNodes[2].childNodes[i].style.backgroundColor = "white";
+        }
+        $(sliderBox).childNodes[2].childNodes[indexOfImg].style.backgroundColor = "red";
+        /*指向下一张图片*/
+        $(sliderBox).style.backgroundImage = 'url('+SrcImages[indexOfImg++]+')';
+    }
+    /*设置自动播晃*/
+    var sliderTimer = window.setInterval(refresh,2000);
+    /*初始化滑动的盒子*/
+    $(sliderBox).style.backgroundImage = 'url('+SrcImages[indexOfImg]+')';
+    $(sliderBox).style.backgroundSize = '100% 100%';
+    $(sliderBox).style.cursor = 'pointer';
+    $(sliderBox).onclick = function(){
+        //window.open(UrlOfImages[indexOfImg]);
+    };
+    /*给盒子添加控件*/
+    $(sliderBox).appendChild(cutLeft);
+    $(sliderBox).appendChild(cutRight);
+    $(sliderBox).appendChild(bottomNav);
+    /*视图初始化*/
+    refresh();
+}
