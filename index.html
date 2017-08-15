@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>滑动效果</title>
+		<link rel="stylesheet" type="text/css" href="css/index.css"/>
+		<script>
+			window.onload = function(){
+				function $(id){return document.getElementById(id);}
+				var imgs = ['images/11.jpg','images/22.jpg','images/33.jpg','images/44.jpg'];
+				function createBoxs(){
+					//创建一个盒子装下要展示的图片
+					slider.style.width = 600*(imgs.length+1) + 'px';
+					for (var i = 0; i <= imgs.length; i++) {
+						var slider_img = document.createElement('div');
+						slider_img.className = 'slider-img';
+						slider_img.style.backgroundImage = 'url('+imgs[i%imgs.length]+')'
+						$('slider').appendChild(slider_img);
+					}
+				}
+				createBoxs();
+				
+				var count = 0;//计时器
+				//盒子的移动
+				function animation(){
+					var max = -imgs.length*600;
+					var left = parseInt($('slider').style.left);
+					if(left <= max){
+						$('slider').style.left = '0';
+						left = 0;
+					}
+					$('slider').style.left = (left-15) + 'px';
+					count++;
+					if(count >= 40){
+						count = 0;
+						window.clearInterval(timer);
+						timer = window.setTimeout(function(){
+							window.clearInterval(timer);
+							timer = window.setInterval(animation,25);
+						},2000);
+					}
+				}
+				//计时器
+				var timer = window.setInterval(animation,25);
+			}
+		</script>
+	</head>
+	<body>
+		<div class="show-slider-box">
+			<div id="slider" class="slider" style="left: 0;"></div>
+		</div>
+		
+	</body>
+</html>
